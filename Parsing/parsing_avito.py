@@ -9,7 +9,7 @@ proxies = {"https": "149.62.183.209:3128"}
 
 
 def get_location(url_proxies):
-    response = requests.get(url=url_proxies, headers=headers)
+    response = requests.get(url=url_proxies, headers=headers, proxies=proxies)
     soup = BeautifulSoup(response.text, "html.parser")
 
     ip = soup.find("div", class_="ip").text.strip()
@@ -29,16 +29,16 @@ def parsing(url):
     soup = BeautifulSoup(response.text, 'html.parser')
     print(soup)
 
-    links = soup.find_all('a', class_='Link ListingItemTitle-module__link')
-    print(links)
+   # Находим все теги <a> с классом `item-description-title-link`
+    links = soup.find_all('a', class_='item-description-title-link')
 
-    # Выводим ссылки на автомобили
+# Выводим ссылки на товары
     for link in links:
         print(link['href'])
 
 
 def main():
-    url = "https://auto.ru/samarskaya_oblast/cars/all/?utm_source=yandex_direct&utm_medium=direct.brand&utm_campaign=hand_desktop_used_brand_search_samara_zapad-none_81682365&utm_content=cid%3A81682365%7Cgid%3A5103467700%7Caid%3A13249852988%7Cph%3A42630146793%7Cpt%3Apremium%7Cpn%3A1%7Csrc%3Anone%7Cst%3Asearch%7Ccgcid%3A14512433%7Cdt%3Adesktop&utm_term=auto+ru&adjust_t=cl4qttt_nsw4it6&adjust_campaign=81682365&adjust_adgroup=5103467700&tracker_limit=10000&yclid=11119579560045182975&utm_referrer=yandex.ru"
+    url = "https://www.avito.ru/"
     get_location(url_proxies="https://2ip.ru")
     parsing(url)
 
