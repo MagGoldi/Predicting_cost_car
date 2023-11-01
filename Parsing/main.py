@@ -30,8 +30,7 @@ def parsing(url):
         print(price)
 
 
-def main(path_to_csv=os.path.join("PYTHON", "dataset.csv")):
-    file_name = open("dataset.csv", "w", encoding="utf-8")
+def main():
     url = "https://www.avito.ru/samara/avtomobili/s_probegom/audi-ASgBAQICAUSGFMjmAQFA4LYNFN6XKA?cd=1&f=ASgBAQICAkSGFMjmAfrwD~i79wIBQOC2DRTelyg&radius=200&searchRadius=200"
     url_proxies = "https://2ip.ru"
 
@@ -39,7 +38,6 @@ def main(path_to_csv=os.path.join("PYTHON", "dataset.csv")):
     parsing(url)
 
     driver.quit()
-    file_name.close()
 
 
 if __name__ == "__main__":
