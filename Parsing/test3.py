@@ -28,8 +28,11 @@ def get_car_data(car_url):
     all_info = soup.find_all("li", class_="params-paramsList__item-appQw")
     price = soup.find("span", {"itemprop": "price"}).text
 
+    info_tmp = []
+
     for n in title:
-        print(n.text)
+        info_tmp.append(n.text)
+        print(info_tmp[4])
     for n in all_info:
         print(n.text)
     print(price)

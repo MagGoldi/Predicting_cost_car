@@ -23,7 +23,6 @@ columns = [
     "ПТС",
     "Таможня",
     "Владение",
-    "id",
 ]
 filename = "Parsing\dataset.csv"
 
