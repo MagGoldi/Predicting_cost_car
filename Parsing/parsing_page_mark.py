@@ -8,6 +8,9 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 
 
+LINKS_MARK = "links_mark.txt"
+LINKS_ON_PAGE = "links_on_page.txt"
+
 driver = webdriver.Chrome()
 
 
@@ -28,15 +31,9 @@ def create_files(file_name):
         pass
 
 
-def save_links_mark(all_link_mark_list):
-    with open("links_mark.txt", "a", encoding="utf-8") as file:
-        for link in all_link_mark_list:
-            file.write(str(link) + "\n")
-
-
-def save_links_on_page(all_link_page_list):
-    with open("links_on_page.txt", "a", encoding="utf-8") as file:
-        for link in all_link_page_list:
+def save_links(name_file, links):
+    with open(name_file, "a", encoding="utf-8") as file:
+        for link in links:
             file.write(str(link) + "\n")
 
 
@@ -55,7 +52,7 @@ def get_car_data(car_url):
     all_link_mark_list = [
         "https://www.avito.ru" + str(link.get("href")) for link in all_link_mark
     ]
-    save_links_mark(all_link_mark_list)
+    save_links(LINKS_MARK, all_link_mark_list)
 
     for mark in all_link_mark_list:
         soup = get_soup(mark)
@@ -80,7 +77,7 @@ def get_car_data(car_url):
             all_link_page_list = [
                 "https://www.avito.ru" + str(link.get("href")) for link in all_link_page
             ]
-            save_links_on_page(all_link_page_list)
+            save_links(LINKS_ON_PAGE, all_link_page_list)
             gen_rand_time()
         gen_rand_time()
 
@@ -89,8 +86,8 @@ def main():
     url_proxies = "https://2ip.ru"
     car_url = "https://www.avito.ru/samara/avtomobili/s_probegom-ASgBAgICAUSGFMjmAQ?radius=100&searchRadius=100"
     get_location(url_proxies)
-    create_files("links_mark.txt")
-    create_files("links_on_page.txt")
+    create_files(LINKS_MARK)
+    create_files(LINKS_ON_PAGE)
     get_car_data(car_url)
     driver.quit()
 
