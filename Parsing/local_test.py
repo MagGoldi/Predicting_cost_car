@@ -1,26 +1,12 @@
-import random
-import time
+# Открываем файл для записи
+with open("links_mark.txt", "w") as file:
+    # Создаем список ссылок
+    links = [
+        "https://www.example1.com",
+        "https://www.example2.com",
+        "https://www.example3.com",
+    ]
 
-# Генерируем случайное время остановки от 1 до 10 секунд
-random_time_int = random.randint(1, 10)
-random_time_float = random.uniform(1, 10)
-
-# Выводим сообщение о времени остановки
-print(f"Программа будет остановлена через {random_time_int} секунд")
-
-# Останавливаем программу на сгенерированное время
-time.sleep(random_time_int)
-
-# Продолжаем выполнение программы после задержки
-print("Программа завершила ожидание")
-
-######
-
-# Выводим сообщение о времени остановки
-print(f"Программа будет остановлена через {random_time_float} секунд")
-
-# Останавливаем программу на сгенерированное время
-time.sleep(random_time_float)
-
-# Продолжаем выполнение программы после задержки
-print("Программа завершила ожидание")
+    # Записываем каждую ссылку в файл
+    for link in links:
+        file.write(link + "\n")
