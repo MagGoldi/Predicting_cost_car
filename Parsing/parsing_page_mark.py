@@ -10,8 +10,6 @@ from bs4 import BeautifulSoup
 
 driver = webdriver.Chrome()
 
-import random
-
 
 def get_soup(url):
     driver.get(url)
@@ -19,22 +17,22 @@ def get_soup(url):
     return soup
 
 
-def gen_rand(start=3, end=10):
-    return random.uniform(start, end)
+def gen_rand_time(start=4, end=10):
+    stop_time = random.uniform(1, 10)
+    print(f"Время остановки - {stop_time} секунд")
+    time.sleep(stop_time)
 
 
 def get_location(url_proxies):
     soup = get_soup(url_proxies)
-
     ip = soup.find("div", class_="ip").text.strip()
     location = soup.find("div", class_="value-country").text.strip()
-
     print(f"IP: {ip}\nLocation: {location}")
 
 
 def get_car_data(car_url):
     soup = get_soup(car_url)
-    time.sleep(gen_rand())
+    time.sleep(gen_rand_time())
 
     all_link_mark = soup.find_all("a", {"data-marker": "popular-rubricator/link"})
     all_link_mark_list = [
@@ -72,33 +70,12 @@ def get_car_data(car_url):
             print(all_link_page_list)
             print(len(all_link_page_list))
 
-            for link in all_link_page_list:
-                soup = get_soup(link)
-
-                title = soup.find_all("a", class_="breadcrumbs-link-Vr4Nc")
-                all_info = soup.find_all("li", class_="params-paramsList__item-appQw")
-                price = soup.find("span", {"itemprop": "price"}).text
-
-                for n in title:
-                    print(n.text)
-                for n in all_info:
-                    print(n.text)
-                print(price)
-
-                time.sleep(gen_rand())
-
-            time.sleep(gen_rand())
-
 
 def main():
     url_proxies = "https://2ip.ru"
     car_url = "https://www.avito.ru/samara/avtomobili/s_probegom-ASgBAgICAUSGFMjmAQ?radius=100&searchRadius=100"
-
     get_location(url_proxies)
-
-    # Получение данных об автомобиле
-    car_data = get_car_data(car_url)
-
+    get_car_data(car_url)
     driver.quit()
 
 
