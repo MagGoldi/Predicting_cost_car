@@ -21,14 +21,9 @@ def get_soup(url):
 
 
 def gen_rand_time():
-    stop_time = random.uniform(2, 5)
+    stop_time = random.uniform(1, 5)
     print(f"Время остановки - {stop_time} секунд")
     time.sleep(stop_time)
-
-
-def create_files(file_name):
-    with open(file_name, "w", encoding="utf-8") as file:
-        pass
 
 
 def save_links(name_file, links):
@@ -44,18 +39,14 @@ def get_location(url_proxies):
     print(f"IP: {ip}\nLocation: {location}")
 
 
-def get_car_data(car_url):
-    soup = get_soup(car_url)
-    gen_rand_time()
+def get_car_data():
+    with open("LINKS_MARK.txt", "r") as file:
+        all_links_mark_list = file.readlines()
 
-    all_link_mark = soup.find_all("a", {"data-marker": "popular-rubricator/link"})
-    all_link_mark_list = [
-        "https://www.avito.ru" + str(link.get("href")) for link in all_link_mark
-    ]
-    all_link_mark_list = list(set(all_link_mark_list))
-    save_links(LINKS_MARK, all_link_mark_list)
+    # Удаляем символ переноса строки из каждой ссылки
+    all_links_mark_list = [link.strip() for link in all_links_mark_list]
 
-    for mark in all_link_mark_list:
+    for mark in all_links_mark_list:
         soup = get_soup(mark)
         max_num_page = soup.find(
             "li",
@@ -87,9 +78,7 @@ def main():
     url_proxies = "https://2ip.ru"
     car_url = "https://www.avito.ru/samara/avtomobili/s_probegom-ASgBAgICAUSGFMjmAQ?radius=100&searchRadius=100"
     get_location(url_proxies)
-    create_files(LINKS_MARK)
-    create_files(LINKS_ON_PAGE)
-    get_car_data(car_url)
+    get_car_data()
     driver.quit()
 
 
