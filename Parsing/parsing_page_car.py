@@ -62,7 +62,7 @@ def get_car_data(car_url):
             car_info["Поколение"] = detail.text.split(":")[-1].strip()
             continue
         elif "Пробег" in detail.text:
-            car_info["Пробег"] = int(detail.text.split()[-1])
+            car_info["Пробег"] = detail.text.split(":")[-1]
             continue
         elif "Владельцев по ПТС" in detail.text:
             car_info["Владельцев по ПТС"] = int(detail.text.split()[-1])
