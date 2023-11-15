@@ -20,6 +20,13 @@ def get_soup(url):
     return soup
 
 
+def get_location(url_proxies):
+    soup = get_soup(url_proxies)
+    ip = soup.find("div", class_="ip").text.strip()
+    location = soup.find("div", class_="value-country").text.strip()
+    print(f"IP: {ip}\nLocation: {location}")
+
+
 def gen_rand_time():
     stop_time = random.uniform(2, 5)
     print(f"Время остановки - {stop_time} секунд")
