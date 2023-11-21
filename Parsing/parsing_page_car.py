@@ -13,6 +13,8 @@ driver = webdriver.Chrome()
 def get_soup(url):
     driver.get(url)
     soup = BeautifulSoup(driver.page_source, "html.parser")
+    gen_rand_time()
+    driver.close()
     return soup
 
 
@@ -25,7 +27,7 @@ def get_location(url_proxies):
 
 
 def gen_rand_time():
-    stop_time = random.uniform(2, 5)
+    stop_time = random.uniform(3, 10)
     print(f"Время остановки - {stop_time} секунд")
     time.sleep(stop_time)
 
@@ -75,12 +77,10 @@ def get_car_info():
     return car_info
 
 
-def get_car_data(car_url):
-    soup = get_soup(car_url)
+def get_car_data(car_url, soup):
     car_info = get_car_info()
 
     title = soup.find_all("span", {"itemprop": "name"})
-    print(title)
 
     car_info["Ссылка"] = car_url
     car_info["Марка"] = title[4].text
@@ -102,7 +102,7 @@ def get_car_data(car_url):
             car_info["Пробег"] = detail.text.split(":")[-1]
             continue
         elif "Владельцев по ПТС" in detail.text:
-            car_info["Владельцев по ПТС"] = int(detail.text.split()[-1])
+            car_info["Владельцев по ПТС"] = detail.text.split()[-1]
             continue
         elif "Состояние" in detail.text:
             car_info["Состояние"] = detail.text.split(":")[-1].strip()
@@ -153,9 +153,8 @@ def main():
             for link in set(links):
                 soup = get_soup(link)
                 if check_page_relevance(soup) == True:
-                    car_info = get_car_data(link)
+                    car_info = get_car_data(link, soup)
                     writer.writerow(car_info)
-                    gen_rand_time()
                 else:
                     continue
     driver.quit()
