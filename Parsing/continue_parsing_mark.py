@@ -76,7 +76,6 @@ def get_car_data():
 
 def main():
     url_proxies = "https://2ip.ru"
-    car_url = "https://www.avito.ru/samara/avtomobili/s_probegom-ASgBAgICAUSGFMjmAQ?radius=100&searchRadius=100"
     get_location(url_proxies)
     get_car_data()
     driver.quit()

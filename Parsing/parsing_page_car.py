@@ -1,6 +1,7 @@
 import csv
 import random
 import time
+import requests
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -27,6 +28,26 @@ def gen_rand_time():
     stop_time = random.uniform(2, 5)
     print(f"Время остановки - {stop_time} секунд")
     time.sleep(stop_time)
+
+
+# def check_page_exists(car_url):
+#     response = requests.get(car_url)
+#     print(response.status_code)
+#     if response.status_code == 200:
+#         print("Страница найдена")
+#         return True
+#     else:
+#         print("Страница не найдена")
+#         return False
+
+
+def check_page_relevance(soup):
+    if type(soup.find("a", {"data-marker": "item-view/closed-warning"})) == type(None):
+        print("Обьявление есть")
+        return True
+    else:
+        print("Обьявление снято")
+        return False
 
 
 def get_car_info():
@@ -56,9 +77,10 @@ def get_car_info():
 
 def get_car_data(car_url):
     soup = get_soup(car_url)
-    car_info = get_car_info(car_url)
+    car_info = get_car_info()
 
     title = soup.find_all("span", {"itemprop": "name"})
+    print(title)
 
     car_info["Ссылка"] = car_url
     car_info["Марка"] = title[4].text
@@ -123,13 +145,19 @@ def main():
     url_proxies = "https://2ip.ru"
     get_location(url_proxies)
 
-    with open("file.csv", "w", newline="", encoding="utf-8") as csvfile:
+    with open("car_data.csv", "w", newline="", encoding="utf-8") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=get_car_info().keys())
         writer.writeheader()
-        with open("links_on_page.txt", "r") as file:
-            car_url = file.readlines()
-            car_info = get_car_data(car_url)
-        writer.writerow(car_info)
+        with open("links_on_page.txt", "r", newline="", encoding="utf-8") as file:
+            links = file.readlines()
+            for link in set(links):
+                soup = get_soup(link)
+                if check_page_relevance(soup) == True:
+                    car_info = get_car_data(link)
+                    writer.writerow(car_info)
+                    gen_rand_time()
+                else:
+                    continue
     driver.quit()
 
 
