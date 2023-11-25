@@ -8,11 +8,15 @@ from selenium import webdriver
 from selenium.common.exceptions import InvalidSessionIdException
 
 
-driver = webdriver.Chrome()
-
-
 def get_soup(url):
+    driver = webdriver.Chrome()
     driver.get(url)
+    driver.execute_cdp_cmd(
+        "Network.setUserAgentOverride",
+        {
+            "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+        },
+    )
     soup = BeautifulSoup(driver.page_source, "html.parser")
     gen_rand_time()
     driver.close()
@@ -20,15 +24,17 @@ def get_soup(url):
 
 
 def get_location(url_proxies):
+    driver = webdriver.Chrome()
     driver.get(url_proxies)
     soup = BeautifulSoup(driver.page_source, "html.parser")
     ip = soup.find("div", class_="ip").text.strip()
     location = soup.find("div", class_="value-country").text.strip()
+    driver.close()
     print(f"IP: {ip}\nLocation: {location}")
 
 
 def gen_rand_time():
-    stop_time = random.uniform(3, 10)
+    stop_time = random.uniform(2, 4)
     print(f"Время остановки - {stop_time} секунд")
     time.sleep(stop_time)
 
@@ -154,11 +160,14 @@ def main():
             for link in set(links):
                 soup = get_soup(link)
                 if check_page_relevance(soup) == True:
-                    car_info = get_car_data(link, soup)
+                    try:
+                        car_info = get_car_data(link, soup)
+                    except IndexError:
+                        print("Доступ ограничен")
+                        exit()
                     writer.writerow(car_info)
                 else:
                     continue
-    driver.quit()
 
 
 if __name__ == "__main__":

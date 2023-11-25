@@ -4,11 +4,12 @@ from selenium.common.exceptions import NoSuchElementException
 import time
 import random
 
+driver = webdriver.Chrome()
+
 with open("links_on_page.txt") as file:
     links = file.readlines()
 
 for link in links:
-    driver = webdriver.Chrome()
     driver.get(link.strip())  # Открываем ссылку, удаляя символы новой строки
     driver.execute_cdp_cmd(
         "Network.setUserAgentOverride",
@@ -17,6 +18,5 @@ for link in links:
         },
     )
     time.sleep(random.uniform(2, 4))
-    driver.close()
 
 driver.quit()
