@@ -11,12 +11,14 @@ def handler(proxy):
     try:
         responce = requests.get(link, proxies=proxies, timeout=2).text
         print(f"IP: {responce.split()}")
+        with open("C:/PYTHON/Predicting_cost_car/good_proxy.txt", "a") as file:
+            file.write(proxy + "\n")
     except:
         print("Прокси не валидный")
 
 
 if __name__ == "__main__":
-    with open("C:\PYTHON\Predicting_cost_car\Parsing\proxy.txt") as file:
+    with open("C:/PYTHON/Predicting_cost_car/all_proxy.txt") as file:
         proxy_base = "".join(file.readlines()).strip().split("\n")
         print(len(set(proxy_base)))
 
