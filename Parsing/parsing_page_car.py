@@ -8,8 +8,17 @@ from selenium import webdriver
 from selenium.common.exceptions import InvalidSessionIdException
 
 
-def get_soup(url):
-    driver = webdriver.Chrome()
+def get_random_proxy(proxies):
+    return random.choice(proxies)
+
+
+def get_soup(url, proxies):
+    proxy = get_random_proxy(proxies)
+    print(proxy)
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument("--proxy-server=%s" % proxy)
+
+    driver = webdriver.Chrome(options=chrome_options)
     driver.get(url)
     driver.execute_cdp_cmd(
         "Network.setUserAgentOverride",
@@ -18,7 +27,6 @@ def get_soup(url):
         },
     )
     soup = BeautifulSoup(driver.page_source, "html.parser")
-    gen_rand_time()
     driver.close()
     return soup
 
@@ -37,17 +45,6 @@ def gen_rand_time():
     stop_time = random.uniform(2, 4)
     print(f"Время остановки - {stop_time} секунд")
     time.sleep(stop_time)
-
-
-# def check_page_exists(car_url):
-#     response = requests.get(car_url)
-#     print(response.status_code)
-#     if response.status_code == 200:
-#         print("Страница найдена")
-#         return True
-#     else:
-#         print("Страница не найдена")
-#         return False
 
 
 def check_page_relevance(soup):
@@ -152,13 +149,17 @@ def main():
     url_proxies = "https://2ip.ru"
     get_location(url_proxies)
 
+    with open("good_proxy.txt", "r") as proxy_file:
+        proxies = proxy_file.readlines()
+
     with open("car_data.csv", "w", newline="", encoding="utf-8") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=get_car_info().keys())
         writer.writeheader()
         with open("links_on_page.txt", "r", newline="", encoding="utf-8") as file:
             links = file.readlines()
             for link in set(links):
-                soup = get_soup(link)
+                print(link)
+                soup = get_soup(link, proxies)
                 if check_page_relevance(soup) == True:
                     try:
                         car_info = get_car_data(link, soup)
