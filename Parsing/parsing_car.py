@@ -70,6 +70,15 @@ def get_car_info():
     return car_info
 
 
+def get_car_params(car_info, params_list, index):
+    car_info["Mileage"] = params_list[index].strip()
+    car_info["Engine_capacity"] = params_list[index + 1].strip()
+    car_info["Body_type"] = params_list[index + 2].strip()
+    car_info["Drive_type"] = params_list[index + 3].strip()
+    car_info["Engine_type"] = params_list[index + 4].strip()
+    return car_info
+
+
 def get_car_data(car_url):
     create_car_data(CAR_DATA)
 
@@ -132,14 +141,14 @@ def get_car_data(car_url):
                 ).text
                 params_list = params.split(",")
 
-                if len(params_list) != 5:
+                if len(params_list) < 5:
                     continue
-
-                car_info["Mileage"] = params_list[0].strip()
-                car_info["Engine_capacity"] = params_list[1].strip().split()[0]
-                car_info["Body_type"] = params_list[2].strip()
-                car_info["Drive_type"] = params_list[3].strip()
-                car_info["Engine_type"] = params_list[4].strip()
+                if len(params_list) == 6:
+                    car_info["Condition"] = "Битая"
+                    car_info = get_car_params(car_info, params_list, 1)
+                else:
+                    car_info["Condition"] = "Не битая"
+                    car_info = get_car_params(car_info, params_list, 0)
 
                 # Город объявления
                 car_info["City"] = item.find(
@@ -153,6 +162,7 @@ def get_car_data(car_url):
                 # else:
                 #    car_info["Photo"] = None
                 add_car_data(CAR_DATA, car_info)
+
             gen_rand_time()
         gen_rand_time()
 
