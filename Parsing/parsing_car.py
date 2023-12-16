@@ -57,6 +57,7 @@ def get_car_info():
     car_info = {
         "Brand_Model": None,
         "Price": None,
+        "Year": None,
         "Condition": None,
         "Engine_capacity": None,
         "Mileage": None,
@@ -88,7 +89,7 @@ def get_car_data(car_url):
     all_links_mark_list = [
         "https://www.avito.ru" + str(link.get("href")) for link in all_links_mark
     ]
-    all_links_mark_list = all_links_mark_list[:29]
+    all_links_mark_list = all_links_mark_list[:28]
     save_links(LINKS_MARK, all_links_mark_list)
 
     for mark in all_links_mark_list:
@@ -127,6 +128,7 @@ def get_car_data(car_url):
                     continue
 
                 car_info["Brand_Model"] = title.split(",")[0].strip()
+                car_info["Year"] = title.split(",")[1].strip()
                 car_info["Price"] = int(
                     item.find("meta", {"itemprop": "price"})["content"]
                 )
