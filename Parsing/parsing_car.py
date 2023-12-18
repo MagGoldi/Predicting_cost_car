@@ -162,12 +162,14 @@ def parsing_car_data(page_item: list) -> None:
 
         car_info["Brand_Model"] = title.split(",")[0].strip()
         car_info["Year"] = title.split(",")[1].strip()
-        car_info["Price"] = int(item.find("meta", {"itemprop": "price"})["content"])
+        car_info["Price"] = int(
+            item.find("meta", {"itemprop": "price"})["content"])
 
         link = item.find("a", {"data-marker": "item-title"})
         car_info["Link"] = "https://www.avito.ru" + str(link.get("href"))
 
-        params = item.find("div", {"class": "iva-item-autoParamsStep-WzfS8"}).text
+        params = item.find(
+            "div", {"class": "iva-item-autoParamsStep-WzfS8"}).text
         params_list = params.split(",")
 
         if len(params_list) < 5:
@@ -179,7 +181,8 @@ def parsing_car_data(page_item: list) -> None:
             car_info["Condition"] = "Не битая"
             car_info = get_car_params(car_info, params_list, 0)
 
-        car_info["City"] = item.find("div", {"class": "geo-root-zPwRk"}).text.strip()
+        car_info["City"] = item.find(
+            "div", {"class": "geo-root-zPwRk"}).text.strip()
 
         add_car_data(CAR_DATA, car_info)
 
@@ -194,7 +197,8 @@ def parsing_brand_links(soup: BeautifulSoup) -> list:
     Returns:
     all_links_mark_list: the list with all links to car brands.
     """
-    all_links_mark = soup.find_all("a", {"data-marker": "popular-rubricator/link"})
+    all_links_mark = soup.find_all(
+        "a", {"data-marker": "popular-rubricator/link"})
     all_links_mark_list = [
         "https://www.avito.ru" + str(link.get("href")) for link in all_links_mark
     ]
