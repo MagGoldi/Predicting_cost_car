@@ -18,38 +18,90 @@ class CarScraper:
         self.PROXIES_URL = "https://2ip.ru"
 
     def get_soup(self, url: str) -> BeautifulSoup:
+        """
+        Get the BeautifulSoup object from a given URL using Selenium.
+
+        Args:
+        url (str): The URL of the webpage to scrape.
+
+        Returns:
+        BeautifulSoup: The BeautifulSoup object representing the webpage.
+        """
         self.driver.get(url)
         soup = BeautifulSoup(self.driver.page_source, "html.parser")
         return soup
 
     def gen_rand_time(self) -> None:
+        """
+        Stops the program for a randomly generated time within the input parameters of the uniform method.
+
+        Returns: None.
+        """
         stop_time = random.uniform(1, 5)
         print(f"Время остановки - {stop_time} секунд")
         time.sleep(stop_time)
 
     def get_location(self, url_proxies: str) -> None:
+        """
+        Get the location from the ip address page.
+
+        Returns: None.
+        """
         soup = self.get_soup(url_proxies)
         ip = soup.find("div", class_="ip").text.strip()
         location = soup.find("div", class_="value-country").text.strip()
         print(f"IP: {ip}\nLocation: {location}")
 
     def save_links(self, filename: str, links: list) -> None:
+        """
+        Saves links from the site and writes them to a ".txt" file.
+        If there is no file, it will create it with the name 'filename'.
+
+        Args:
+        filename (str): the name of the '.txt' file with links.
+        links (list): the list with links to car brands.
+
+        Returns: None.
+        """
         with open(filename, "w", encoding="utf-8") as file:
             for link in links:
                 file.write(str(link) + "\n")
 
     def create_car_data(self, filename: str) -> None:
+        """
+        Creates a forte '.csv' file with car data and writes column names to the first row.
+
+        Args:
+        filename (str): the name of the file in the '.csv' format.
+
+        Returns: None.
+        """
         with open(filename, "w", newline="", encoding="utf-8") as cars_data:
             writer = csv.DictWriter(
                 cars_data, fieldnames=self.get_car_info().keys())
             writer.writeheader()
 
     def add_car_data(self, filename: str, car_info: dict) -> None:
+        """
+        Adds data about one car to the end of the '.csv' file.
+
+        Args:
+        filename (str): the name of the file in the '.csv' format.
+        car_info (dict): the dictionary that contains all the information about one car.
+
+        Returns: None.
+        """
         with open(filename, "a", newline="", encoding="utf-8") as cars_data:
             writer = csv.DictWriter(cars_data, fieldnames=car_info.keys())
             writer.writerow(car_info)
 
     def get_car_info(self) -> dict:
+        """
+        Initializes a dictionary with empty values.
+
+        Returns:
+        Dict: dictionary with empty values.
+        """
         car_info = {
             "Brand_Model": None,
             "Price": None,
@@ -66,6 +118,17 @@ class CarScraper:
         return car_info
 
     def get_car_params(self, car_info: dict, params_list: list, index: int) -> dict:
+        """
+        Extracting parameters from an html page depending on the condition of the car.
+
+        Args:
+        car_info (dict): the dictionary that contains all the information about one car.
+        params_list (list): the list with the parameters of the car.
+        index (int): the index of the correct sequence in 'params_list'.
+
+        Returns:
+        dict: the dictionary with the correct sequence of parameters.
+        """
         car_info["Mileage"] = params_list[index].strip()
         car_info["Engine_capacity"] = params_list[index + 1].strip()
         car_info["Body_type"] = params_list[index + 2].strip()
