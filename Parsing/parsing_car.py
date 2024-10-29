@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 class CarScraper:
     def __init__(self):
         self.driver = webdriver.Chrome()
-        self.CAR_DATA = os.path.join('Files', "car_data__" +
+        self.CAR_DATA = os.path.join('Files', "car_data_" +
                                      str(datetime.date.today()) + ".csv")
         self.LINKS_MARK = os.path.join('Files', "links_mark.txt")
         self.CAR_URL = "https://www.avito.ru/samara/avtomobili/s_probegom-ASgBAgICAUSGFMjmAQ?radius=100&searchRadius=100"
@@ -147,36 +147,50 @@ class CarScraper:
         """
         for item in page_item:
             car_info = self.get_car_info()
-            title = item.find("h3", {"itemprop": "name"})
 
-            if title:
-                title = item.find("h3", {"itemprop": "name"}).text
-            else:
-                continue
+            try:
+                title = item.find("h3", {"itemprop": "name"})
 
-            car_info["Brand_Model"] = title.split(",")[0].strip()
-            car_info["Year"] = title.split(",")[1].strip()
-            car_info["Price"] = int(
-                item.find("meta", {"itemprop": "price"})["content"])
+                if title:
+                    title = title.text
+                else:
+                    continue
 
-            link = item.find("a", {"data-marker": "item-title"})
-            car_info["Link"] = "https://www.avito.ru" + str(link.get("href"))
+                car_info["Brand_Model"] = title.split(",")[0].strip()
+                car_info["Year"] = title.split(",")[1].strip()
 
-            params = item.find(
-                "div", {"class": "iva-item-autoParamsStep-WzfS8"}).text
-            params_list = params.split(",")
+                # Проверяем наличие и значение атрибута 'content'
+                price_meta = item.find("meta", {"itemprop": "price"})
+                car_info["Price"] = int(
+                    price_meta["content"]) if price_meta and price_meta["content"] else None
 
-            if len(params_list) < 5:
-                continue
-            if len(params_list) == 6:
-                car_info["Condition"] = "Битая"
-                car_info = self.get_car_params(car_info, params_list, 1)
-            else:
-                car_info["Condition"] = "Не битая"
-                car_info = self.get_car_params(car_info, params_list, 0)
+                link = item.find("a", {"data-marker": "item-title"})
+                car_info["Link"] = "https://www.avito.ru" + \
+                    str(link.get("href")) if link else None
 
-            car_info["City"] = item.find(
-                "div", {"class": "geo-root-zPwRk"}).text.strip()
+                params = item.find(
+                    "div", {"class": "iva-item-autoParamsStep-WzfS8"})
+                if params:
+                    params_list = params.text.split(",")
+                    if len(params_list) < 5:
+                        continue
+                    if len(params_list) == 6:
+                        car_info["Condition"] = "Битая"
+                        car_info = self.get_car_params(
+                            car_info, params_list, 1)
+                    else:
+                        car_info["Condition"] = "Не битая"
+                        car_info = self.get_car_params(
+                            car_info, params_list, 0)
+
+                geo_info = item.find("div", {"class": "geo-root-zPwRk"})
+                car_info["City"] = geo_info.text.strip(
+                ) if geo_info else "Информация недоступна"
+
+            except (AttributeError, ValueError, TypeError, KeyError) as e:
+                print(f"Error: {e}")
+            except Exception as e:
+                print(f"Noname Error: {e}")
 
             self.add_car_data(self.CAR_DATA, car_info)
 
@@ -219,7 +233,7 @@ class CarScraper:
             time.sleep(10)
             max_num_page = soup.find(
                 "li",
-                class_="styles-module-listItem-_La42 styles-module-listItem_last-GI_us styles-module-listItem_notFirst-LGEQU",
+                class_="styles-module-listItem-MKpTZ styles-module-listItem_last-RzX6e styles-module-listItem_notFirst-eZHpD",
             ).text
             for num_page in range(1, int(max_num_page) + 1):
                 page = (
